@@ -1,11 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import React, { useState } from 'react';
 
 const ProfileUpdate = () => {
   const [employee, setEmployee] = useState({
-    empId: '',
-    email: '',
-    role: '',
+    empId: 'EMP123',
+    email: 'employee@example.com',
+    role: 'Employee',
     empName: '',
     designation: '',
     staffType: '',
@@ -16,26 +15,6 @@ const ProfileUpdate = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
 
-  const jwtToken = localStorage.getItem('jwtToken'); // Get the JWT token
-
-  // Fetch employee data when the component mounts
-  useEffect(() => {
-    const fetchEmployeeData = async () => {
-      try {
-        const response = await axios.get('/api/employee/profile', {
-          headers: {
-            Authorization: `Bearer ${jwtToken}`
-          }
-        });
-        setEmployee(response.data); // Populate employee state with the fetched data
-      } catch (error) {
-        console.error('Error fetching profile data:', error);
-      }
-    };
-
-    fetchEmployeeData();
-  }, [jwtToken]);
-
   // Handle input changes for editable fields
   const handleChange = (e) => {
     setEmployee({
@@ -45,132 +24,198 @@ const ProfileUpdate = () => {
   };
 
   // Handle form submission to update profile
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     setLoading(true);
 
-    try {
-      const response = await axios.put(
-        '/api/employee/update',
-        { ...employee },
-        {
-          headers: {
-            Authorization: `Bearer ${jwtToken}`
-          }
-        }
-      );
+    // Simulate a successful update
+    setTimeout(() => {
+      setLoading(false);
       setSuccessMessage('Profile updated successfully!');
       setErrorMessage('');
-    } catch (error) {
-      setSuccessMessage('');
-      setErrorMessage('Error updating profile. Please try again.');
-    } finally {
-      setLoading(false);
-    }
+    }, 1000);
   };
 
   return (
-    <div>
-      <h2>Update Profile</h2>
-      {errorMessage && <div className="error">{errorMessage}</div>}
-      {successMessage && <div className="success">{successMessage}</div>}
+    <>
+      <style>
+        {`
+          .profile-update-wrapper {
+            display: flex;
+            justify-content: center;
+            min-height: 70vh;
+            background-color: #f9fafb;
+            padding: 20px;
+          }
 
-      <form onSubmit={handleSubmit}>
-        {/* Disabled fields (empId, email, and role) */}
-        <div>
-          <label>Employee ID</label>
-          <input
-            type="text"
-            name="empId"
-            value={employee.empId}
-            disabled
-          />
-        </div>
+          .profile-update-card {
+            background: white;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 600px;
+            text-align: center;
+          }
 
-        <div>
-          <label>Email</label>
-          <input
-            type="email"
-            name="email"
-            value={employee.email}
-            disabled
-          />
-        </div>
+          .profile-update-card h2 {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 30px;
+            color: #1f2937; /* gray-800 */
+          }
 
-        <div>
-          <label>Role</label>
-          <input
-            type="text"
-            name="role"
-            value={employee.role}
-            disabled
-          />
-        </div>
+          .profile-update-card input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 16px;
+            border: 1px solid #d1d5db; /* gray-300 */
+            border-radius: 8px;
+            font-size: 16px;
+            box-sizing: border-box;
+          }
 
-        {/* Editable fields */}
-        <div>
-          <label>Employee Name</label>
-          <input
-            type="text"
-            name="empName"
-            value={employee.empName}
-            onChange={handleChange}
-            placeholder="Enter your name"
-            required
-          />
-        </div>
+          .profile-update-card button {
+            width: 100%;
+            padding: 12px;
+            background-color: #4CAF50; /* green */
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: background-color 0.3s;
+          }
 
-        <div>
-          <label>Designation</label>
-          <input
-            type="text"
-            name="designation"
-            value={employee.designation}
-            onChange={handleChange}
-            placeholder="Enter your designation"
-          />
-        </div>
+          .profile-update-card button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+          }
 
-        <div>
-          <label>Staff Type</label>
-          <input
-            type="text"
-            name="staffType"
-            value={employee.staffType}
-            onChange={handleChange}
-            placeholder="Enter your staff type"
-          />
-        </div>
+          .profile-update-card button:hover:not(:disabled) {
+            background-color: #45a049;
+          }
 
-        <div>
-          <label>Profile Picture URL</label>
-          <input
-            type="text"
-            name="profilePicture"
-            value={employee.profilePicture}
-            onChange={handleChange}
-            placeholder="Enter profile picture URL"
-          />
-        </div>
+          .message {
+            margin-top: 20px;
+            font-weight: bold;
+          }
 
-        <div>
-          <label>Approval Flow ID</label>
-          <input
-            type="text"
-            name="approvalFlowId"
-            value={employee.approvalFlowId}
-            onChange={handleChange}
-            placeholder="Enter approval flow ID"
-          />
-        </div>
+          .error {
+            color: red;
+          }
 
-        <div>
-          <button type="submit" disabled={loading}>
-            {loading ? 'Updating...' : 'Update Profile'}
-          </button>
+          .success {
+            color: green;
+          }
+        `}
+      </style>
+
+      <div className="profile-update-wrapper">
+        <div className="profile-update-card">
+          <h2>Update Profile</h2>
+          {errorMessage && <div className="message error">{errorMessage}</div>}
+          {successMessage && <div className="message success">{successMessage}</div>}
+
+          <form onSubmit={handleSubmit}>
+            {/* Disabled fields (empId, email, and role) */}
+            <div>
+              <label>Employee ID</label>
+              <input
+                type="text"
+                name="empId"
+                value={employee.empId}
+                disabled
+              />
+            </div>
+
+            <div>
+              <label>Email</label>
+              <input
+                type="email"
+                name="email"
+                value={employee.email}
+                disabled
+              />
+            </div>
+
+            <div>
+              <label>Role</label>
+              <input
+                type="text"
+                name="role"
+                value={employee.role}
+                disabled
+              />
+            </div>
+
+            {/* Editable fields */}
+            <div>
+              <label>Employee Name</label>
+              <input
+                type="text"
+                name="empName"
+                value={employee.empName}
+                onChange={handleChange}
+                placeholder="Enter your name"
+                required
+              />
+            </div>
+
+            <div>
+              <label>Designation</label>
+              <input
+                type="text"
+                name="designation"
+                value={employee.designation}
+                onChange={handleChange}
+                placeholder="Enter your designation"
+              />
+            </div>
+
+            <div>
+              <label>Staff Type</label>
+              <input
+                type="text"
+                name="staffType"
+                value={employee.staffType}
+                onChange={handleChange}
+                placeholder="Enter your staff type"
+              />
+            </div>
+
+            <div>
+              <label>Profile Picture URL</label>
+              <input
+                type="text"
+                name="profilePicture"
+                value={employee.profilePicture}
+                onChange={handleChange}
+                placeholder="Enter profile picture URL"
+              />
+            </div>
+
+            <div>
+              <label>Approval Flow ID</label>
+              <input
+                type="text"
+                name="approvalFlowId"
+                value={employee.approvalFlowId}
+                onChange={handleChange}
+                placeholder="Enter approval flow ID"
+              />
+            </div>
+
+            <div>
+              <button type="submit" disabled={loading}>
+                {loading ? 'Updating...' : 'Update Profile'}
+              </button>
+            </div>
+          </form>
         </div>
-      </form>
-    </div>
+      </div>
+    </>
   );
 };
 
